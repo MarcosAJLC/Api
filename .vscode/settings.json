@@ -1,0 +1,47 @@
+{
+  "editor.wordWrap": "wordWrapColumn",
+  "workbench.editorAssociations": {
+    "*.html": "default",
+    "*.js": "default",
+    "*.zip": "default"
+  },
+  "files.associations": {
+    "*.js": "javascript"
+  },
+  "workbench.colorTheme": "One Dark Pro",
+  "workbench.iconTheme": "material-icon-theme",
+
+  // 🔹 ESLint e Prettier corrigindo ao salvar
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // 🔹 Ativa ESLint para os principais tipos de arquivos
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+
+  // 🔹 Garante que o Prettier será o formatador principal
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // 🔹 Configurações do Prettier para não dar conflito com ESLint/Airbnb
+  "prettier.singleQuote": true, // Usa aspas simples por padrão
+  "prettier.semi": true, // Garante ponto e vírgula no final das linhas
+  "prettier.trailingComma": "es5",
+
+  "liveServer.settings.donotShowInfoMsg": true,
+  "git.autofetch": true,
+  "git.enableSmartCommit": true,
+  "editor.fontFamily": "JetBrains Mono",
+  "editor.lineHeight": 1.8,
+  "editor.rulers": [80, 120],
+  "editor.fontLigatures": true,
+  "explorer.confirmDelete": false,
+  "git.confirmSync": false,
+  "editor.guides.bracketPairs": true
+}

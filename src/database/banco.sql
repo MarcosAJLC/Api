@@ -25,8 +25,8 @@ create table if not exists Users(
 );
 ALTER TABLE Users
 ALTER COLUMN created_at SET DEFAULT now();
-ALTER table Users
-drop COLUMN password
+
+
 
 
 

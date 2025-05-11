@@ -1,12 +1,11 @@
 import db from "../../config/database.js";
 import bcrypt from "bcrypt";
-import { json } from "express";
 import validator from "validator";
 
 class UserC {
   async store(req, res) {
     const nome = "Marcos Alexandre";
-    const email = "marcosalexandrejlcpc@gmail.com";
+    const email = "marcosalexandrejlc@gmail.com";
     const password = "emigam2008";
 
     if (password.length < 6 || password.length > 255) {
@@ -35,7 +34,7 @@ class UserC {
         email,
         password_hash,
       })
-      .select("*");
+      .select("id,nome,email");
 
     if (errorInsercao) {
       return res.status(400).json({ erro: errorInsercao.message });
@@ -45,7 +44,9 @@ class UserC {
 
   async index(req, res) {
     try {
-      const { data: users, error } = await db.from("users").select("*");
+      const { data: users, error } = await db
+        .from("users")
+        .select("id, nome, email");
 
       if (error) {
         return res.status(400).json({ erro: error.message });
@@ -61,7 +62,7 @@ class UserC {
       const { id } = req.params;
       const { data: user, error } = await db
         .from("users")
-        .select("*")
+        .select("id, nome, email, created_at")
         .eq("id", id)
         .single();
       if (error) {
@@ -74,10 +75,11 @@ class UserC {
   }
   async update(req, res) {
     try {
-      const { id } = req.params;
+      const id = req.userId;
       if (!id) {
-        return res.status(400).json({ erro: "Id não fornecido" });
+        return res.status(400).json({ erro: "Usuário não autenticado" });
       }
+      console.log("id recebido:", req.userId);
 
       const { nome, email, password } = req.body;
       const updates = {};
@@ -100,15 +102,38 @@ class UserC {
         }
         updates.password_hash = await bcrypt.hash(password, 8);
       }
+      updates.updated_at = new Date().toISOString();
 
       const { data, error } = await db
         .from("users")
         .update(updates)
+        .eq("id", id)
+        .select("*");
+
+      if (error || !data || data.length === 0) {
+        return res.status(404).json({ erro: "Usuário não encontrado por id" });
+      }
+
+      return res.status(200).json(data[0]);
+    } catch (e) {
+      return res.status(500).json({ erro: "Erro interno do servidor" });
+    }
+  }
+  async delete(req, res) {
+    try {
+      const id = req.userId;
+      if (!id) {
+        return res.status(400).json({ erro: "Id não fornecido" });
+      }
+
+      const { data, error } = await db
+        .from("users")
+        .delete()
         .eq("id", Number(id))
         .select("*");
 
       if (error || !data || data.length === 0) {
-        return res.status(404).json({ erro: "Usuário não encontrado" });
+        return res.status(404).json({ erro: "Usuário não encontrado por id" });
       }
 
       return res.status(200).json(data[0]);

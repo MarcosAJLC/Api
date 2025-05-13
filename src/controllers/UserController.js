@@ -79,7 +79,6 @@ class UserC {
       if (!id) {
         return res.status(400).json({ erro: "Usuário não autenticado" });
       }
-      console.log("id recebido:", req.userId);
 
       const { nome, email, password } = req.body;
       const updates = {};
@@ -90,12 +89,23 @@ class UserC {
         updates.nome = nome;
       }
 
-      if (email && !validator.isEmail(email)) {
-        return res.status(400).json({ erro: "Email inválido" });
-      } else if (email) {
+      if (email) {
+        if (!validator.isEmail(email)) {
+          return res.status(400).json({ erro: "Email inválido" });
+        }
+        const { data: UsuarioComEmail, erro: erroEmail } = await db
+          .from("users")
+          .select("id")
+          .eq("email", email)
+          .single();
+
+        if (UsuarioComEmail && UsuarioComEmail.id !== id) {
+          return res
+            .status(400)
+            .json({ erro: "Email já está em uso por outro usuário" });
+        }
         updates.email = email;
       }
-
       if (password) {
         if (password.length < 6 || password.length > 50) {
           return res.status(400).json({ erro: "Senha inválida" });
@@ -103,17 +113,16 @@ class UserC {
         updates.password_hash = await bcrypt.hash(password, 8);
       }
       updates.updated_at = new Date().toISOString();
-
       const { data, error } = await db
         .from("users")
         .update(updates)
-        .eq("id", id)
-        .select("*");
+        .eq("id", Number(id))
+        .select("id,nome,email");
 
       if (error || !data || data.length === 0) {
         return res.status(404).json({ erro: "Usuário não encontrado por id" });
       }
-
+      console.log("Resultado do update:", { data, error });
       return res.status(200).json(data[0]);
     } catch (e) {
       return res.status(500).json({ erro: "Erro interno do servidor" });

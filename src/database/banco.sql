@@ -14,6 +14,8 @@ ALTER TABLE Alunos
 ALTER COLUMN created_at SET DEFAULT now();
 ALTER TABLE Alunos
 ALTER COLUMN updated_at SET DEFAULT now();
+alter table Alunos
+alter COLUMN Email unique;
 
 create table if not exists Users(
   Id serial primary key,

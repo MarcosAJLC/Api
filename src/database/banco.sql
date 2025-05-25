@@ -1,35 +1,29 @@
-create table if not exists Alunos
-(
-  Id serial primary key,
-  Nome text not null,
-  Sobrenome text not null,
-  Email text not null,
-  Idade integer not null,
-  Peso float not null,
-  Altura float not null,
-  Created_at date not null,
-  Updated_at date not null
+CREATE TABLE IF NOT EXISTS photo (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  originalname TEXT NOT NULL,
+  filename TEXT NOT NULL,
+  aluno_id INTEGER REFERENCES student(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
 );
-ALTER TABLE Alunos
-ALTER COLUMN created_at SET DEFAULT now();
-ALTER TABLE Alunos
-ALTER COLUMN updated_at SET DEFAULT now();
-alter table Alunos
-alter COLUMN Email unique;
 
-create table if not exists Users(
-  Id serial primary key,
-  Nome text not null,
-  password_hash text not null,
-  Email text not null unique,
-  Created_at date not null,
-  Updated_at date not null
+CREATE TABLE IF NOT EXISTS student (
+  id SERIAL PRIMARY KEY,
+  nome TEXT NOT NULL,
+  sobrenome TEXT NOT NULL,
+  email TEXT NOT NULL,
+  idade INTEGER NOT NULL,
+  peso FLOAT NOT NULL,
+  altura FLOAT NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW(),
+  created_by UUID REFERENCES Users(id) ON DELETE CASCADE
 );
-ALTER TABLE Users
-ALTER COLUMN created_at SET DEFAULT now();
-
-
-
-
-
-
+CREATE TABLE IF NOT EXISTS users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  nome TEXT NOT NULL,
+  password_hash TEXT NOT NULL,
+  email TEXT NOT NULL UNIQUE,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);

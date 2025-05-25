@@ -1,16 +1,51 @@
 import db from "../../config/database.js";
 import validator from "validator";
-class AlunoC {
+import { createClient } from "@supabase/supabase-js";
+class StudentC {
   async index(req, res) {
-    const { data: aluno, error: errorInsercao } = await db
-      .from("alunos")
-      .select("*");
+    const created_by = req.userId;
+    const { data: student, error: errorInsercao } = await db
+      .from("student")
+      .eq("created_by", created_by)
+      .select("");
     if (errorInsercao) {
       return res.status(400).json({ erro: errorInsercao.message });
     }
-    return res.status(201).json(aluno);
+    return res.status(201).json(student);
   }
+  async search(req, res) {
+    const search = req.body.search?.trim();
+    const id = req.userId;
+
+    try {
+      let database = db
+        .from("student")
+        .select("nome, sobrenome, email, idade, peso, altura");
+
+      if (!search) {
+        database = database.eq("created_by", id);
+      } else {
+        database = database.or(
+          `and(created_by.eq.${id},nome.ilike.%${search}%),
+         and(created_by.eq.${id},sobrenome.ilike.%${search}%),
+         and(created_by.eq.${id},email.ilike.%${search}%)`,
+        );
+      }
+
+      const { data: students, error } = await database;
+
+      if (error) {
+        return res.status(400).json({ erro: error.message });
+      }
+
+      return res.status(200).json(students);
+    } catch (e) {
+      return res.status(500).json({ erro: "Internal server error" });
+    }
+  }
+
   async store(req, res) {
+    const created_by = req.userId;
     const { nome, sobrenome, email, idade, peso, altura } = req.body;
     if (nome.length < 3 || nome.length > 255) {
       return res
@@ -31,7 +66,7 @@ class AlunoC {
           .json({ erro: "The email address provided is either invalid" });
       }
       const { data: UsuarioComEmail, erro: erroEmail } = await db
-        .from("alunos")
+        .from("student")
         .select("id")
         .eq("email", email)
         .single();
@@ -52,8 +87,8 @@ class AlunoC {
       return res.status(400).json("Height must be a numeric value");
     }
 
-    const { data: novoaluno, error: errorInsercao } = await db
-      .from("alunos")
+    const { data: novostudent, error: errorInsercao } = await db
+      .from("student")
       .insert([
         {
           nome,
@@ -62,17 +97,19 @@ class AlunoC {
           idade,
           peso,
           altura,
+          created_by,
         },
       ])
-      .select("*");
+      .select("nome, sobrenome, email, idade, peso, altura");
 
     if (errorInsercao) {
       return res.status(400).json({ erro: errorInsercao.message });
     }
-    return res.status(201).json(novoaluno);
+    return res.status(201).json(novostudent);
   }
   async update(req, res) {
     const { id } = req.params;
+    const created_by = req.userId;
     const { nome, email, sobrenome, idade, peso, altura } = req.body;
     const updates = {};
 
@@ -91,7 +128,7 @@ class AlunoC {
           .json({ erro: "The email address provided is either invalid" });
       }
       const { data: UsuarioComEmail, erro: erroEmail } = await db
-        .from("users")
+        .from("student")
         .select("id")
         .eq("email", email)
         .single();
@@ -129,18 +166,20 @@ class AlunoC {
     }
 
     updates.updated_at = new Date().toISOString();
-    const { data: novoaluno, error: errorInsercao } = await db
-      .from("alunos")
+    const { data: novostudent, error: errorInsercao } = await db
+      .from("student")
       .update(updates)
       .eq("id", Number(id))
+      .eq("created_by", created_by)
       .select("nome, sobrenome, email, idade, peso, altura");
     if (errorInsercao) {
       return res.status(400).json({ erro: errorInsercao.message });
     }
-    return res.status(200).json(novoaluno);
+    return res.status(200).json(novostudent);
   }
   async show(req, res) {
     try {
+      const created_by = req.userId;
       const { id } = req.params;
       if (!id) {
         return res
@@ -148,18 +187,19 @@ class AlunoC {
           .json("The ID was either not provided or could not be located.");
       }
 
-      const { data: aluno, error: errorInsercao } = await db
-        .from("alunos")
+      const { data: student, error: errorInsercao } = await db
+        .from("student")
         .select("*")
+        .eq("created_by", created_by)
         .eq("id", Number(id))
         .single();
       if (errorInsercao) {
         return res.status(400).json({ erro: errorInsercao.message });
       }
-      if (!aluno) {
+      if (!student) {
         return res.status(404).json("Student not found");
       }
-      return res.status(201).json(aluno);
+      return res.status(201).json(student);
     } catch (e) {
       return res
         .status(400)
@@ -168,6 +208,7 @@ class AlunoC {
   }
   async delete(req, res) {
     try {
+      const created_by = req.userId;
       const { id } = req.params;
       if (!id) {
         return res
@@ -175,15 +216,16 @@ class AlunoC {
           .json("The ID was either not provided or could not be located.");
       }
 
-      const { data: aluno, error: errorInsercao } = await db
-        .from("alunos")
+      const { data: student, error: errorInsercao } = await db
+        .from("student")
         .delete()
-        .select("*")
+        .select("nome, sobrenome, email, idade, peso, altura")
+        .eq("created_by", created_by)
         .eq("id", Number(id));
       if (errorInsercao) {
         return res.status(400).json({ erro: errorInsercao.message });
       }
-      if (!aluno) {
+      if (!student) {
         return res.status(404).json("Student not found");
       }
       return res
@@ -197,4 +239,4 @@ class AlunoC {
   }
 }
 
-export default new AlunoC();
+export default new StudentC();

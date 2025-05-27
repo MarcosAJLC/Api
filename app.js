@@ -25,7 +25,7 @@ class App {
     this.app.use("/users/", userR);
     this.app.use("/tokens/", tokenR);
     this.app.use("/student/", StudentC);
-    this.app.use("/photos/", PhotoC);
+    this.app.use("/photo/", PhotoC);
   }
   errorsHandle() {
     this.app.use((err, req, res, next) => {

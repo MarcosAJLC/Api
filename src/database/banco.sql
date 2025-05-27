@@ -1,8 +1,9 @@
+truncate table photo;
 CREATE TABLE IF NOT EXISTS photo (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   originalname TEXT NOT NULL,
   filename TEXT NOT NULL,
-  aluno_id INTEGER REFERENCES student(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  student_id INTEGER REFERENCES student(id) ON DELETE CASCADE ON UPDATE CASCADE,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -19,6 +20,7 @@ CREATE TABLE IF NOT EXISTS student (
   updated_at TIMESTAMP DEFAULT NOW(),
   created_by UUID REFERENCES Users(id) ON DELETE CASCADE
 );
+
 CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   nome TEXT NOT NULL,

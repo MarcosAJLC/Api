@@ -1,10 +1,9 @@
-import db from "../../config/database.js";
+import supabase from "../../config/database.js";
 import validator from "validator";
-import { createClient } from "@supabase/supabase-js";
 class StudentC {
   async index(req, res) {
     const created_by = req.userId;
-    const { data: student, error: errorInsercao } = await db
+    const { data: student, error: errorInsercao } = await supabase
       .from("student")
       .eq("created_by", created_by)
       .select("");
@@ -14,33 +13,53 @@ class StudentC {
     return res.status(201).json(student);
   }
   async search(req, res) {
-    const search = req.body.search?.trim();
     const id = req.userId;
+    const { search, email, nome, sobrenome } = req.body;
 
     try {
-      let database = db
+      let query = supabase
         .from("student")
-        .select("nome, sobrenome, email, idade, peso, altura");
+        .select(
+          `
+        id,
+        nome,
+        sobrenome,
+        email,
+        idade,
+        peso,
+        altura,
+        photo ( id, filename)
+      `,
+        )
+        .eq("created_by", id);
 
-      if (!search) {
-        database = database.eq("created_by", id);
-      } else {
-        database = database.or(
-          `and(created_by.eq.${id},nome.ilike.%${search}%),
-         and(created_by.eq.${id},sobrenome.ilike.%${search}%),
-         and(created_by.eq.${id},email.ilike.%${search}%)`,
-        );
+      if (search?.trim()) {
+        const termo = search.trim();
+        query = query.or(`
+        nome.ilike.%${termo}%,
+        sobrenome.ilike.%${termo}%,
+        email.ilike.%${termo}%
+      `);
+      } else if (email?.trim()) {
+        query = query.ilike("email", `%${email.trim()}%`);
+      } else if (nome?.trim()) {
+        query = query.ilike("nome", `%${nome.trim()}%`);
+      } else if (sobrenome?.trim()) {
+        query = query.ilike("sobrenome", `%${sobrenome.trim()}%`);
       }
 
-      const { data: students, error } = await database;
+      const { data, error } = await query;
 
       if (error) {
-        return res.status(400).json({ erro: error.message });
+        return res
+          .status(400)
+          .json({ errors: ["Search failed: " + error.message] });
       }
 
-      return res.status(200).json(students);
+      return res.status(200).json(data);
     } catch (e) {
-      return res.status(500).json({ erro: "Internal server error" });
+      console.error("Unexpected error during search:", e);
+      return res.status(500).json({ errors: ["Internal server error."] });
     }
   }
 
@@ -65,7 +84,7 @@ class StudentC {
           .status(400)
           .json({ erro: "The email address provided is either invalid" });
       }
-      const { data: UsuarioComEmail, erro: erroEmail } = await db
+      const { data: UsuarioComEmail, erro: erroEmail } = await supabase
         .from("student")
         .select("id")
         .eq("email", email)
@@ -87,7 +106,7 @@ class StudentC {
       return res.status(400).json("Height must be a numeric value");
     }
 
-    const { data: novostudent, error: errorInsercao } = await db
+    const { data: novostudent, error: errorInsercao } = await supabase
       .from("student")
       .insert([
         {
@@ -127,7 +146,7 @@ class StudentC {
           .status(400)
           .json({ erro: "The email address provided is either invalid" });
       }
-      const { data: UsuarioComEmail, erro: erroEmail } = await db
+      const { data: UsuarioComEmail, erro: erroEmail } = await supabase
         .from("student")
         .select("id")
         .eq("email", email)
@@ -166,7 +185,7 @@ class StudentC {
     }
 
     updates.updated_at = new Date().toISOString();
-    const { data: novostudent, error: errorInsercao } = await db
+    const { data: novostudent, error: errorInsercao } = await supabase
       .from("student")
       .update(updates)
       .eq("id", Number(id))
@@ -187,7 +206,7 @@ class StudentC {
           .json("The ID was either not provided or could not be located.");
       }
 
-      const { data: student, error: errorInsercao } = await db
+      const { data: student, error: errorInsercao } = await supabase
         .from("student")
         .select("*")
         .eq("created_by", created_by)
@@ -216,7 +235,7 @@ class StudentC {
           .json("The ID was either not provided or could not be located.");
       }
 
-      const { data: student, error: errorInsercao } = await db
+      const { data: student, error: errorInsercao } = await supabase
         .from("student")
         .delete()
         .select("nome, sobrenome, email, idade, peso, altura")

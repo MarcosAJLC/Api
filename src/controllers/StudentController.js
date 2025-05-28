@@ -27,7 +27,7 @@ class StudentC {
         idade,
         peso,
         altura,
-        photo ( id, filename, url)
+        photo ( id, url)
       `,
         )
         .eq("created_by", id);

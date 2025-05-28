@@ -1,8 +1,6 @@
 drop table photo CASCADE;
 CREATE TABLE IF NOT EXISTS photo (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  originalname TEXT NOT NULL,
-  filename TEXT NOT NULL,
   student_id INTEGER REFERENCES student(id) ON DELETE CASCADE ON UPDATE CASCADE,
   url text not NULL,
   created_at TIMESTAMP DEFAULT NOW(),

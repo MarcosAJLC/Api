@@ -15,7 +15,6 @@ class StudentC {
   async search(req, res) {
     const id = req.userId;
     const { search, email, nome, sobrenome } = req.body;
-
     try {
       let query = supabase
         .from("student")
@@ -28,7 +27,7 @@ class StudentC {
         idade,
         peso,
         altura,
-        photo ( id, filename)
+        photo ( id, filename, url)
       `,
         )
         .eq("created_by", id);

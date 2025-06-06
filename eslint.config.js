@@ -5,7 +5,7 @@ import importPlugin from "eslint-plugin-import";
 
 export default [
   js.configs.recommended,
-  airbnbBase, // Usa as regras do Airbnb
+  airbnbBase,
   {
     plugins: {
       prettier,
@@ -31,8 +31,8 @@ export default [
         "always", // Força a inclusão da extensão
         {
           js: "never", // Impede a extensão .js para arquivos JS se você não quiser
-          mjs: "always", // Força a inclusão da extensão .mjs para arquivos MJS
-          cjs: "always", // Força a inclusão da extensão .cjs para arquivos CJS
+          mjs: "always",
+          cjs: "always",
         },
       ],
 

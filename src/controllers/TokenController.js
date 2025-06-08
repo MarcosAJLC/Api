@@ -24,7 +24,14 @@ class TokenC {
     const token = jwt.sign({ id, email }, process.env.Token, {
       expiresIn: process.env.Token_Expiration,
     });
-    return res.status(201).json({ token, user });
+    return res.status(201).json({
+      token,
+      user: {
+        id: user.id,
+        nome: user.nome,
+        email: user.email,
+      },
+    });
   }
 }
 

@@ -4,9 +4,8 @@ import validator from "validator";
 
 class UserC {
   async store(req, res) {
-    const nome = "Marcos Alexandre";
-    const email = "marcosalexandrejlc@gmail.com";
-    const password = "emigam2008";
+    const { nome, email, password } = req.body;
+
     if (nome && (nome.length < 3 || nome.length > 255)) {
       return res.status(400).json({
         erro: "Invalid name,please enter a name between 3 and 255 caracters",

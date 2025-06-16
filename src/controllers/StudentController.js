@@ -5,8 +5,7 @@ class StudentC {
     const created_by = req.userId;
     const { data: student, error: errorInsercao } = await supabase
       .from("student")
-      .eq("created_by", created_by)
-      .select("");
+      .select("*");
     if (errorInsercao) {
       return res.status(400).json({ erro: errorInsercao.message });
     }

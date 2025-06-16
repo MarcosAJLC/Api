@@ -11,6 +11,10 @@ import { resolve } from "path";
 import cors from "cors";
 import helmet from "helmet";
 
+const corsOptions = {
+  origin: "http://localhost:5173",
+};
+
 class App {
   constructor() {
     this.app = express();
@@ -20,7 +24,7 @@ class App {
   }
 
   middlewares() {
-    this.app.use(cors({ origin: "*" }));
+    this.app.use(cors(corsOptions));
     this.app.use(helmet());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.json());

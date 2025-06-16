@@ -12,7 +12,10 @@ import cors from "cors";
 import helmet from "helmet";
 
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: [
+    "localhost:5173",
+    "https://api-432d3x5k6-marcos-s-projects-7b4a11c3.vercel.app/",
+  ],
 };
 
 class App {

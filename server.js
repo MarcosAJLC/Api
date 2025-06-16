@@ -1,3 +1,4 @@
 import app from "./app.js";
+import serverless from "serverless-http";
 
-export default app;
+export const handler = serverless(app);

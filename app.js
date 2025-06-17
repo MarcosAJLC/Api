@@ -25,6 +25,15 @@ class App {
   }
 
   middlewares() {
+    app.use((req, res, next) => {
+      res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+      res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+      res.setHeader(
+        "Access-Control-Allow-Headers",
+        "Content-Type, Authorization",
+      );
+      next();
+    });
     this.app.use(cors(corsOptions));
     this.app.use(helmet());
     this.app.use(express.urlencoded({ extended: true }));
@@ -40,16 +49,6 @@ class App {
   }
   errorsHandle() {
     this.app.use((err, req, res, next) => {
-      res.setHeader("Access-Control-Allow-Origin", "*"); // ou seu domínio
-      res.setHeader(
-        "Access-Control-Allow-Headers",
-        "Origin, X-Requested-With, Content-Type, Accept, Authorization",
-      );
-      res.setHeader(
-        "Access-Control-Allow-Methods",
-        "GET, POST, PATCH, DELETE, OPTIONS",
-      );
-      next();
       if (err instanceof multer.MulterError) {
         return res.status(400).json({ erro: err.message });
       }

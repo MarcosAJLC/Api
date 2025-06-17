@@ -40,6 +40,11 @@ class App {
         "Access-Control-Allow-Headers",
         "Origin, X-Requested-With, Content-Type, Accept, Authorization",
       );
+      res.setHeader(
+        "Access-Control-Allow-Methods",
+        "GET, POST, PATCH, DELETE, OPTIONS",
+      );
+      next();
       if (err instanceof multer.MulterError) {
         return res.status(400).json({ erro: err.message });
       }

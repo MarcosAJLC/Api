@@ -11,27 +11,6 @@ import { resolve } from "path";
 import cors from "cors";
 import helmet from "helmet";
 
-this.app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept",
-  );
-  next();
-});
-
-const whiteList = ["http://localhost:3000"];
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (whiteList.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-};
-
 class App {
   constructor() {
     this.app = express();
@@ -41,6 +20,26 @@ class App {
   }
 
   middlewares() {
+    this.app.use((req, res, next) => {
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept",
+      );
+      next();
+    });
+
+    const whiteList = ["http://localhost:3000"];
+
+    const corsOptions = {
+      origin: function (origin, callback) {
+        if (whiteList.indexOf(origin) !== -1 || !origin) {
+          callback(null, true);
+        } else {
+          callback(new Error("Not allowed by CORS"));
+        }
+      },
+    };
     this.app.use(cors(corsOptions));
     this.app.use(helmet());
     this.app.use(express.urlencoded({ extended: true }));

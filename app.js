@@ -11,21 +11,16 @@ import { resolve } from "path";
 import cors from "cors";
 import helmet from "helmet";
 
-const whiteList = [
-  "https://react1.otaviomiranda.com.br",
-  "https://react2.otaviomiranda.com.br",
-  "http://localhost:3000",
-];
+this.app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept",
+  );
+  next();
+});
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (whiteList.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-};
+const whiteList = ["http://localhost:3000"];
 
 class App {
   constructor() {
@@ -36,7 +31,6 @@ class App {
   }
 
   middlewares() {
-    this.app.use(cors(corsOptions));
     this.app.use(helmet());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.json());

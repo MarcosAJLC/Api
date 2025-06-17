@@ -35,6 +35,11 @@ class App {
   }
   errorsHandle() {
     this.app.use((err, req, res, next) => {
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.setHeader(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+      );
       if (err instanceof multer.MulterError) {
         return res.status(400).json({ erro: err.message });
       }

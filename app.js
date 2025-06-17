@@ -29,7 +29,7 @@ class App {
       next();
     });
 
-    const whiteList = ["http://localhost:3000"];
+    const whiteList = ["http://localhost:5173"];
 
     const corsOptions = {
       origin: function (origin, callback) {

@@ -20,11 +20,7 @@ class App {
   }
 
   middlewares() {
-    this.app.use.cors({
-      origin: "http://localhost:5173", // ou '*' durante desenvolvimento
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      allowedHeaders: ["Content-Type", "Authorization"],
-    });
+    this.app.use(cors({ origin: "*" }));
     this.app.use(helmet());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.json());

@@ -11,6 +11,11 @@ import { resolve } from "path";
 import cors from "cors";
 import helmet from "helmet";
 
+const corsOptions = {
+  origin: (origin, callback) => callback(null, true),
+  credentials: true,
+};
+
 class App {
   constructor() {
     this.app = express();
@@ -20,17 +25,7 @@ class App {
   }
 
   middlewares() {
-    app.use(
-      cors({
-        origin: "http://localhost:5173", // ou '*' durante desenvolvimento
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        allowedHeaders: ["Content-Type", "Authorization"],
-      }),
-    );
-
-    // Responde requisições OPTIONS antes que sejam bloqueadas
-    app.options("*", cors());
-
+    this.app.use(cors(corsOptions));
     this.app.use(helmet());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.json());
@@ -45,8 +40,15 @@ class App {
   }
   errorsHandle() {
     this.app.use((err, req, res, next) => {
-      res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
-      res.status(err.status || 500).json({ erro: err.message });
+      res.setHeader("Access-Control-Allow-Origin", "*"); // ou seu domínio
+      res.setHeader(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+      );
+      res.setHeader(
+        "Access-Control-Allow-Methods",
+        "GET, POST, PATCH, DELETE, OPTIONS",
+      );
       next();
       if (err instanceof multer.MulterError) {
         return res.status(400).json({ erro: err.message });

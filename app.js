@@ -11,9 +11,20 @@ import { resolve } from "path";
 import cors from "cors";
 import helmet from "helmet";
 
+const whiteList = [
+  "https://react1.otaviomiranda.com.br",
+  "https://react2.otaviomiranda.com.br",
+  "http://localhost:3000",
+];
+
 const corsOptions = {
-  origin: (origin, callback) => callback(null, true),
-  credentials: true,
+  origin: function (origin, callback) {
+    if (whiteList.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
 };
 
 class App {

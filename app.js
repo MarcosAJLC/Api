@@ -28,8 +28,10 @@ class App {
       );
       next();
     });
-
-    const whiteList = ["http://localhost:5173"];
+    const whiteList = [
+      "http://localhost:5173",
+      "https://marcos-s-projects-7b4a11c3.vercel.app",
+    ];
 
     const corsOptions = {
       origin: function (origin, callback) {

@@ -4,10 +4,10 @@ import LoginReq from "../middlewares/LoginReq.js";
 
 const router = new Router();
 
-router.get("/", StudentC.index);
+router.get("/", LoginReq, StudentC.index);
 router.post("/", LoginReq, StudentC.store);
 router.put("/:id", LoginReq, StudentC.update);
-router.get("/:id", StudentC.show);
+router.get("/:id", LoginReq, StudentC.show);
 router.delete("/:id", LoginReq, StudentC.delete);
 router.post("/search/", LoginReq, StudentC.search);
 

@@ -28,7 +28,7 @@ class TokenC {
       token,
       user: {
         id: user.id,
-        nome: user.nome,
+        name: user.name,
         email: user.email,
       },
     });

@@ -4,16 +4,14 @@ import validator from "validator";
 
 class UserC {
   async store(req, res) {
-    const nome = "Marcos Alexandre";
-    const email = "marcosalexandrejlc@gmail.com";
-    const password = "emigam2008";
-    if (nome && (nome.length < 3 || nome.length > 255)) {
+    const { name, email, password } = req.body;
+    if (name && (name.length < 3 || name.length > 255)) {
       return res.status(400).json({
         erro: "Invalid name,please enter a name between 3 and 255 caracters",
       });
     }
 
-    if (password.length < 6 || password.length > 255) {
+    if (password.length < 6 || password.length > 50) {
       return res
         .status(400)
         .json(
@@ -28,26 +26,26 @@ class UserC {
         .json("The email address provided is either invalid or already in use");
     }
 
-    const { data: novoUser, error: errorInsercao } = await db
+    const { data: NewUser, error: errorInsercao } = await db
       .from("users")
       .insert({
-        nome,
+        name,
         email,
         password_hash,
       })
-      .select("id,nome,email");
+      .select("id,name,email");
 
     if (errorInsercao) {
       return res.status(400).json({ erro: errorInsercao.message });
     }
-    return res.status(201).json({ data: novoUser });
+    return res.status(201).json({ data: NewUser });
   }
 
   async index(req, res) {
     try {
       const { data: users, error } = await db
         .from("users")
-        .select("id, nome, email");
+        .select("id, name, email");
 
       if (error) {
         return res.status(400).json({ erro: error.message });
@@ -63,7 +61,7 @@ class UserC {
       const { id } = req.params;
       const { data: user, error } = await db
         .from("users")
-        .select("id, nome, email, created_at")
+        .select("id, name, email, created_at")
         .eq("id", id)
         .single();
       if (error) {
@@ -85,15 +83,15 @@ class UserC {
         });
       }
 
-      const { nome, email, password } = req.body;
+      const { name, email, password } = req.body;
       const updates = {};
 
-      if (nome && (nome.length < 3 || nome.length > 255)) {
+      if (name && (name.length < 3 || name.length > 255)) {
         return res.status(400).json({
           erro: "Invalid name,please enter a name between 3 and 255 caracters",
         });
-      } else if (nome) {
-        updates.nome = nome;
+      } else if (name) {
+        updates.name = name;
       }
 
       if (email) {
@@ -128,7 +126,7 @@ class UserC {
         .from("users")
         .update(updates)
         .eq("id", Number(id))
-        .select("id,nome,email");
+        .select("id,name,email");
 
       if (error || !data || data.length === 0) {
         return res.status(404).json({ erro: "User not found by ID" });

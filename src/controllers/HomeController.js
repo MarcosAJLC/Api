@@ -4,12 +4,12 @@ class HomeC {
     const { data: novoaluno, error: errorInserção } = await supabase
       .from("alunos")
       .insert({
-        nome: "marcos",
-        sobrenome: "alexandre",
+        name: "marcos",
+        lastname: "alexandre",
         email: "marcosalexandrejlc@gmail.com",
-        idade: 16,
-        peso: 53.3,
-        altura: 169,
+        age: 16,
+        weight: 53.3,
+        height: 169,
       })
       .select("*");
     if (errorInserção) {

@@ -8,12 +8,12 @@ class StudentC {
       .select(
         `
         id,
-        nome,
-        sobrenome,
+        name,
+        lastname,
         email,
-        idade,
-        peso,
-        altura,
+        age,
+        weight,
+        height,
         photo ( id, url)
       `,
       )
@@ -25,19 +25,19 @@ class StudentC {
   }
   async search(req, res) {
     const id = req.userId;
-    const { search, email, nome, sobrenome } = req.body;
+    const { search, email, name, lastname } = req.body;
     try {
       let query = supabase
         .from("student")
         .select(
           `
         id,
-        nome,
-        sobrenome,
+        name,
+        lastname,
         email,
-        idade,
-        peso,
-        altura,
+        age,
+        weight,
+        height,
         photo ( id, url)
       `,
         )
@@ -46,16 +46,16 @@ class StudentC {
       if (search?.trim()) {
         const termo = search.trim();
         query = query.or(`
-        nome.ilike.%${termo}%,
-        sobrenome.ilike.%${termo}%,
+        name.ilike.%${termo}%,
+        lastname.ilike.%${termo}%,
         email.ilike.%${termo}%
       `);
       } else if (email?.trim()) {
         query = query.ilike("email", `%${email.trim()}%`);
-      } else if (nome?.trim()) {
-        query = query.ilike("nome", `%${nome.trim()}%`);
-      } else if (sobrenome?.trim()) {
-        query = query.ilike("sobrenome", `%${sobrenome.trim()}%`);
+      } else if (name?.trim()) {
+        query = query.ilike("name", `%${name.trim()}%`);
+      } else if (lastname?.trim()) {
+        query = query.ilike("lastname", `%${lastname.trim()}%`);
       }
 
       const { data, error } = await query;
@@ -75,13 +75,13 @@ class StudentC {
 
   async store(req, res) {
     const created_by = req.userId;
-    const { nome, sobrenome, email, idade, peso, altura } = req.body;
-    if (nome.length < 3 || nome.length > 255) {
+    const { name, lastname, email, age, weight, height } = req.body;
+    if (name.length < 3 || name.length > 255) {
       return res
         .status(400)
         .json("Invalid name,please enter a name between 3 and 255 caracters");
     }
-    if (sobrenome.length < 3 || sobrenome.length > 255) {
+    if (lastname.length < 3 || lastname.length > 255) {
       return res
         .status(400)
         .json(
@@ -106,13 +106,13 @@ class StudentC {
         });
       }
     }
-    if (idade && !Number.isInteger(idade)) {
+    if (age && !Number.isInteger(age)) {
       return res.status(400).json("Age must be an integer");
     }
-    if (peso && isNaN(peso)) {
+    if (weight && isNaN(weight)) {
       return res.status(400).json("Weight must be a numeric value");
     }
-    if (altura && isNaN(altura)) {
+    if (height && isNaN(height)) {
       return res.status(400).json("Height must be a numeric value");
     }
 
@@ -120,16 +120,16 @@ class StudentC {
       .from("student")
       .insert([
         {
-          nome,
-          sobrenome,
+          name,
+          lastname,
           email,
-          idade,
-          peso,
-          altura,
+          age,
+          weight,
+          height,
           created_by,
         },
       ])
-      .select("nome, sobrenome, email, idade, peso, altura");
+      .select("name, lastname, email, age, weight, height");
 
     if (errorInsercao) {
       return res.status(400).json({ erro: errorInsercao.message });
@@ -139,15 +139,15 @@ class StudentC {
   async update(req, res) {
     const { id } = req.params;
     const created_by = req.userId;
-    const { nome, email, sobrenome, idade, peso, altura } = req.body;
+    const { name, email, lastname, age, weight, height } = req.body;
     const updates = {};
 
-    if (nome && (nome.length < 3 || nome.length > 255)) {
+    if (name && (name.length < 3 || name.length > 255)) {
       return res.status(400).json({
         erro: "Invalid name,please enter a name between 3 and 255 caracters",
       });
-    } else if (nome) {
-      updates.nome = nome;
+    } else if (name) {
+      updates.name = name;
     }
 
     if (email) {
@@ -169,29 +169,29 @@ class StudentC {
       }
       updates.email = email;
     }
-    if (sobrenome && (sobrenome.length < 3 || sobrenome.length > 255)) {
+    if (lastname && (lastname.length < 3 || lastname.length > 255)) {
       return res
         .status(400)
         .json(
           "The last name provided is invalid,it must contain between 3 and 255 caracters",
         );
-    } else if (sobrenome) {
-      updates.sobrenome = sobrenome;
+    } else if (lastname) {
+      updates.lastname = lastname;
     }
-    if (idade && !Number.isInteger(idade)) {
+    if (age && !Number.isInteger(age)) {
       return res.status(400).json("Age must be an integer");
-    } else if (idade) {
-      updates.idade = idade;
+    } else if (age) {
+      updates.age = age;
     }
-    if (peso && isNaN(peso)) {
+    if (weight && isNaN(weight)) {
       return res.status(400).json("Weight must be a numeric value");
-    } else if (peso) {
-      updates.peso = peso;
+    } else if (weight) {
+      updates.weight = weight;
     }
-    if (altura && isNaN(altura)) {
+    if (height && isNaN(height)) {
       return res.status(400).json("Height must be a numeric value");
-    } else if (altura) {
-      updates.altura = altura;
+    } else if (height) {
+      updates.height = height;
     }
 
     updates.updated_at = new Date().toISOString();
@@ -200,7 +200,7 @@ class StudentC {
       .update(updates)
       .eq("id", Number(id))
       .eq("created_by", created_by)
-      .select("nome, sobrenome, email, idade, peso, altura");
+      .select("name, lastname, email, age, weight, height");
     if (errorInsercao) {
       return res.status(400).json({ erro: errorInsercao.message });
     }
@@ -248,7 +248,7 @@ class StudentC {
       const { data: student, error: errorInsercao } = await supabase
         .from("student")
         .delete()
-        .select("nome, sobrenome, email, idade, peso, altura")
+        .select("name, lastname, email, age, weight, height")
         .eq("created_by", created_by)
         .eq("id", Number(id));
       if (errorInsercao) {

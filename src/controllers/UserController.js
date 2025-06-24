@@ -36,9 +36,19 @@ class UserC {
       .select("id,name,email");
 
     if (errorInsercao) {
+      if (
+        errorInsercao.message.includes("duplicate key value") &&
+        errorInsercao.message.includes("users_email_key")
+      ) {
+        return res
+          .status(400)
+          .json(
+            "The email address provided is either invalid or already in use",
+          );
+      }
+
       return res.status(400).json({ erro: errorInsercao.message });
     }
-    return res.status(201).json({ data: NewUser });
   }
 
   async index(req, res) {

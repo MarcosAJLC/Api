@@ -34,7 +34,6 @@ class UserC {
         password_hash,
       })
       .select("id,name,email");
-
     if (errorInsercao) {
       if (
         errorInsercao.message.includes("duplicate key value") &&
@@ -49,6 +48,7 @@ class UserC {
 
       return res.status(400).json({ erro: errorInsercao.message });
     }
+    return res.status(200).json(NewUser);
   }
 
   async index(req, res) {

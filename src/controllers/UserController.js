@@ -135,7 +135,7 @@ class UserC {
       const { data, error } = await db
         .from("users")
         .update(updates)
-        .eq("id", Number(id))
+        .eq("id", id)
         .select("id,name,email");
 
       if (error || !data || data.length === 0) {
@@ -161,7 +161,7 @@ class UserC {
         .select("*");
 
       if (error || !data || data.length === 0) {
-        return res.status(404).json({ erro: "User not found by ID", id });
+        return res.status(404).json({ erro: "User not found by ID" });
       }
 
       return res.status(200).json(data[0]);

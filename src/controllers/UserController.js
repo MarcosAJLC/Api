@@ -87,7 +87,6 @@ class UserC {
   async update(req, res) {
     try {
       const id = req.userId;
-      console.log(id);
       if (!id) {
         return res.status(400).json({
           erro: "Authentication required. Please sign in to continue.",
@@ -162,7 +161,7 @@ class UserC {
         .select("*");
 
       if (error || !data || data.length === 0) {
-        return res.status(404).json({ erro: "User not found by ID" });
+        return res.status(404).json({ erro: "User not found by ID", id });
       }
 
       return res.status(200).json(data[0]);

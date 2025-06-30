@@ -1,13 +1,20 @@
-drop table photo CASCADE;
-CREATE TABLE IF NOT EXISTS photo (
+-- Passo 1: dropar na ordem correta
+DROP TABLE IF EXISTS photo CASCADE;
+DROP TABLE IF EXISTS student CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
+-- Passo 2: criar users
+CREATE TABLE users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  student_id INTEGER REFERENCES student(id) ON DELETE CASCADE ON UPDATE CASCADE,
-  url text not NULL,
+  name TEXT NOT NULL,
+  password_hash TEXT NOT NULL,
+  email TEXT NOT NULL UNIQUE,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
-drop table student CASCADE;
-CREATE TABLE IF NOT EXISTS student (
+
+-- Passo 3: criar student
+CREATE TABLE student (
   id SERIAL PRIMARY KEY,
   name TEXT NOT NULL,
   lastname TEXT NOT NULL,
@@ -17,15 +24,14 @@ CREATE TABLE IF NOT EXISTS student (
   height FLOAT NOT NULL,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),
-  created_by UUID REFERENCES Users(id) ON DELETE CASCADE
+  created_by UUID REFERENCES users(id) ON DELETE CASCADE
 );
 
-drop table users CASCADE;
-CREATE TABLE IF NOT EXISTS users (
+-- Passo 4: criar photo com referência válida a student
+CREATE TABLE photo (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name TEXT NOT NULL,
-  password_hash TEXT NOT NULL,
-  email TEXT NOT NULL UNIQUE,
+  student_id INTEGER REFERENCES student(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  url TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );

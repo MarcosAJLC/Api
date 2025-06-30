@@ -3,7 +3,7 @@ import validator from "validator";
 class StudentC {
   async index(req, res) {
     const created_by = req.userId;
-    const { data: student, error } = await supabase
+    const { data: student, error: errorInsercao } = await supabase
       .from("student")
       .select(
         `
@@ -22,8 +22,8 @@ class StudentC {
       )
       .eq("created_by", created_by);
 
-    if (error) {
-      return res.status(400).json({ erro: error.message });
+    if (errorInsercao) {
+      return res.status(400).json({ erro: errorInsercao.message });
     }
     return res.status(201).json(student);
   }

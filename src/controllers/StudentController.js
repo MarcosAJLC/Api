@@ -3,21 +3,25 @@ import validator from "validator";
 class StudentC {
   async index(req, res) {
     const created_by = req.userId;
-    const { data: student, error: errorInsercao } = await supabase
+    const { data: student, error } = await supabase
       .from("student")
       .select(
         `
-        id,
-        name,
-        lastname,
-        email,
-        age,
-        weight,
-        height,
-        photo ( id, url)
-      `,
+    id,
+    name,
+    lastname,
+    email,
+    age,
+    weight,
+    height,
+    photo:photo!photo_student_id_fkey (
+      id,
+      url
+    )
+  `,
       )
       .eq("created_by", created_by);
+
     if (errorInsercao) {
       return res.status(400).json({ erro: errorInsercao.message });
     }

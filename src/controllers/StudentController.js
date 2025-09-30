@@ -80,36 +80,45 @@ class StudentC {
   async store(req, res) {
     const created_by = req.userId;
     const { name, lastname, email, age, weight, height } = req.body;
-    if (name.length < 3 || name.length > 255) {
+
+    if (!email || !email.trim()) {
+      return res.status(400).json({ erro: "Email is required" });
+    }
+
+    if (!validator.isEmail(email)) {
       return res
         .status(400)
-        .json("Invalid name,please enter a name between 3 and 255 caracters");
+        .json({ erro: "The email address provided is invalid" });
     }
-    if (lastname.length < 3 || lastname.length > 255) {
+
+    // validação do nome
+    if (!name || name.length < 3 || name.length > 255) {
+      return res
+        .status(400)
+        .json("Invalid name, please enter a name between 3 and 255 characters");
+    }
+
+    if (!lastname || lastname.length < 3 || lastname.length > 255) {
       return res
         .status(400)
         .json(
-          "The last name provided is invalid,it must contain between 3 and 255 caracters",
+          "The last name provided is invalid, it must contain between 3 and 255 characters",
         );
     }
-    if (email) {
-      if (!validator.isEmail(email)) {
-        return res
-          .status(400)
-          .json({ erro: "The email address provided is either invalid" });
-      }
-      const { data: UsuarioComEmail, erro: erroEmail } = await supabase
-        .from("student")
-        .select("id")
-        .eq("email", email)
-        .single();
 
-      if (UsuarioComEmail) {
-        return res.status(400).json({
-          erro: "This email address is already associated with an existing account.",
-        });
-      }
+    // checar se email já existe
+    const { data: UsuarioComEmail } = await supabase
+      .from("student")
+      .select("id")
+      .eq("email", email)
+      .single();
+
+    if (UsuarioComEmail) {
+      return res.status(400).json({
+        erro: "This email address is already associated with an existing account.",
+      });
     }
+
     if (age && !Number.isInteger(age)) {
       return res.status(400).json("Age must be an integer");
     }

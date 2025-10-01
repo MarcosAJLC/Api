@@ -106,16 +106,16 @@ class StudentC {
         );
     }
 
-    // checar se email já existe
     const { data: UsuarioComEmail } = await supabase
       .from("student")
       .select("id")
       .eq("email", email)
+      .eq("created_by", created_by)
       .single();
 
     if (UsuarioComEmail) {
       return res.status(400).json({
-        erro: "This email address is already associated with an existing account.",
+        erro: "This email address is already associated with one of your students.",
       });
     }
 

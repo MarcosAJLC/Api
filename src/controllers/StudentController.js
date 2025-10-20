@@ -129,7 +129,7 @@ class StudentC {
       return res.status(400).json("Height must be a numeric value");
     }
 
-    const { data: novostudent, error: errorInsercao } = await supabase
+    const { data: newstudent, error: errorInsercao } = await supabase
       .from("student")
       .insert([
         {
@@ -147,7 +147,7 @@ class StudentC {
     if (errorInsercao) {
       return res.status(400).json({ erro: errorInsercao.message });
     }
-    return res.status(201).json(novostudent);
+    return res.status(201).json(newstudent);
   }
   async update(req, res) {
     const { id } = req.params;
@@ -210,7 +210,7 @@ class StudentC {
     }
 
     updates.updated_at = new Date().toISOString();
-    const { data: novostudent, error: errorInsercao } = await supabase
+    const { data: newstudent, error: errorInsercao } = await supabase
       .from("student")
       .update(updates)
       .eq("id", Number(id))
@@ -219,7 +219,7 @@ class StudentC {
     if (errorInsercao) {
       return res.status(400).json({ erro: errorInsercao.message });
     }
-    return res.status(200).json(novostudent);
+    return res.status(200).json(newstudent);
   }
   async show(req, res) {
     try {

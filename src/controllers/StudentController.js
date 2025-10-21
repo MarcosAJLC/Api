@@ -170,7 +170,6 @@ class StudentC {
           .json({ erro: "The email address provided is invalid." });
       }
 
-      // 🔹 Corrige busca (agora com created_by)
       const { data: UserEmail, error: erroEmail } = await supabase
         .from("student")
         .select("id")
@@ -178,7 +177,6 @@ class StudentC {
         .eq("created_by", created_by)
         .single();
 
-      // 🔹 Corrige comparação (conversão de tipo)
       if (UserEmail && Number(UserEmail.id) !== Number(id)) {
         return res.status(400).json({
           erro: "This email address is already associated with an existing account.",

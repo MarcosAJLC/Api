@@ -106,14 +106,14 @@ class StudentC {
         );
     }
 
-    const { data: UsuarioComEmail } = await supabase
+    const { data: UserEmail } = await supabase
       .from("student")
       .select("id")
       .eq("email", email)
       .eq("created_by", created_by)
       .single();
 
-    if (UsuarioComEmail) {
+    if (UserEmail) {
       return res.status(400).json({
         erro: "This email address is already associated with one of your students.",
       });
@@ -169,14 +169,14 @@ class StudentC {
           .status(400)
           .json({ erro: "The email address provided is either invalid" });
       }
-      const { data: UsuarioComEmail, erro: erroEmail } = await supabase
+      const { data: UserEmail, erro: erroEmail } = await supabase
         .from("student")
         .select("id")
         .eq("email", email)
         .single();
 
-      if (UsuarioComEmail.email !== email) {
-        if (UsuarioComEmail && UsuarioComEmail.id !== id) {
+      if (UserEmail.email !== email) {
+        if (UserEmail && UserEmail.id !== id) {
           return res.status(400).json({
             erro: "This email address is already associated with an existing account.",
           });

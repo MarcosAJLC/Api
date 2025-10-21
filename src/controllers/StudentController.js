@@ -175,13 +175,12 @@ class StudentC {
         .eq("email", email)
         .single();
 
-      if (UserEmail.email !== email) {
-        if (UserEmail && UserEmail.id !== id) {
-          return res.status(400).json({
-            erro: "This email address is already associated with an existing account.",
-          });
-        }
+      if (UserEmail && UserEmail.id !== id) {
+        return res.status(400).json({
+          erro: "This email address is already associated with an existing account.",
+        });
       }
+
       updates.email = email;
     }
     if (lastname && (lastname.length < 3 || lastname.length > 255)) {

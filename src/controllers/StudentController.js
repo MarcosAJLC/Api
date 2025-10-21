@@ -167,15 +167,19 @@ class StudentC {
       if (!validator.isEmail(email)) {
         return res
           .status(400)
-          .json({ erro: "The email address provided is either invalid" });
+          .json({ erro: "The email address provided is invalid." });
       }
-      const { data: UserEmail, erro: erroEmail } = await supabase
+
+      // 🔹 Corrige busca (agora com created_by)
+      const { data: UserEmail, error: erroEmail } = await supabase
         .from("student")
         .select("id")
         .eq("email", email)
+        .eq("created_by", created_by)
         .single();
 
-      if (UserEmail && UserEmail.id !== id) {
+      // 🔹 Corrige comparação (conversão de tipo)
+      if (UserEmail && Number(UserEmail.id) !== Number(id)) {
         return res.status(400).json({
           erro: "This email address is already associated with an existing account.",
         });
@@ -183,6 +187,7 @@ class StudentC {
 
       updates.email = email;
     }
+
     if (lastname && (lastname.length < 3 || lastname.length > 255)) {
       return res
         .status(400)

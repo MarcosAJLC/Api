@@ -235,10 +235,25 @@ class StudentC {
 
       const { data: student, error: errorInsercao } = await supabase
         .from("student")
-        .select("*")
+        .select(
+          `
+    id,
+    name,
+    lastname,
+    email,
+    age,
+    weight,
+    height,
+    photo:photo!photo_student_id_fkey (
+      id,
+      url
+    )
+  `,
+        )
         .eq("created_by", created_by)
         .eq("id", Number(id))
         .single();
+
       if (errorInsercao) {
         return res.status(400).json({ erro: errorInsercao.message });
       }

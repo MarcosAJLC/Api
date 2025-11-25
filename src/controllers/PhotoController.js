@@ -26,6 +26,23 @@ class PhotoController {
         return res.status(400).json({ error: "Student not found" });
       }
 
+      const { data: oldPhotos } = await db
+        .from("photo")
+        .select("*")
+        .eq("student_id", student_id);
+
+      if (oldPhotos && oldPhotos.length > 0) {
+        for (const oldPhoto of oldPhotos) {
+          const urlPath = oldPhoto.url.split(
+            "/storage/v1/object/public/photo/",
+          )[1];
+          if (urlPath) {
+            await db.storage.from("photo").remove([urlPath]);
+          }
+          await db.from("photo").delete().eq("id", oldPhoto.id);
+        }
+      }
+
       const fileExt = path.extname(file.originalname);
       const fileName = `${uuidv4()}${fileExt}`;
       const filePath = `students/${fileName}`;

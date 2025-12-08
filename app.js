@@ -23,6 +23,7 @@ class App {
     const whiteList = [
       "http://localhost:5173",
       "https://api-blush-omega.vercel.app/",
+      "https://platform-api-code.netlify.app",
     ];
 
     const corsOptions = {

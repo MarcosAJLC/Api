@@ -9,7 +9,7 @@
     "*.js": "javascript"
   },
   "workbench.colorTheme": "One Dark Pro",
-  "workbench.iconTheme": "material-icon-theme",
+  "workbench.iconTheme": "symbols",
 
   // 🔹 ESLint e Prettier corrigindo ao salvar
   "editor.codeActionsOnSave": {
